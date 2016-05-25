@@ -51,15 +51,15 @@ bool threshold_pipe_args<ImageType>::parse(int argc, char** argv)
             mode = 2;
         }
 
-        auto& vec_t_args = threshold_arg.getValue();
+        auto& vec_args = threshold_arg.getValue();
 
-        if(vec_t_args.size() > 0)
+        switch (vec_args.size())
         {
-            t1 = vec_t_args.at(0);
+            case 3: t3 = vec_args.at(2);
+            case 2: t2 = vec_args.at(1);
+            case 1: t3 = t1 = vec_args.at(0);
+            default: break;
         }
-
-        //x1 = region_arg.getValue().at(0);
-        //x2 = region_arg.getValue().at(1);
 
         return true;
     }

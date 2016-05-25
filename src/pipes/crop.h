@@ -6,17 +6,16 @@
 #include <itkImageFileWriter.h>
 #include <itkRegionOfInterestImageFilter.h>
 
-#include <base_args.hpp>
+#include <macros.hpp>
 
 template<typename ImageType>
 struct crop_pipe_args
 {
-    BASE_ARGS
+    BASE_ARGS(ImageType)
+    BASE_IO(ImageType)
 
-    typename ImageType::SizeType inSize;
+    SizeType inSize;
 
-    std::string input_file;
-    std::string output_file;
     int x1, x2;
 
 
@@ -40,19 +39,9 @@ struct crop_pipe_args
         arg->SetRegionOfInterest(desiredRegion);
     }
 
-    void set (size_t I, itk::ImageFileReader<ImageType>* arg)
-    {
-        arg->SetFileName(input_file.c_str());
-    }
-
     void get (size_t I,itk::ImageFileReader<ImageType>* arg)
     {
         inSize = arg->GetOutput()->GetLargestPossibleRegion().GetSize();
-    }
-
-    void set (size_t I, itk::ImageFileWriter<ImageType>* arg)
-    {
-        arg->SetFileName(output_file.c_str());
     }
 
     bool parse(int argc, char** argv);
