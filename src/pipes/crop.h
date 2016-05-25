@@ -1,10 +1,6 @@
 #pragma once
 
-#include <tuple>
 #include <string>
-
-using std::tuple;
-using std::string;
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
@@ -19,8 +15,8 @@ struct crop_pipe_args
 
     typename ImageType::SizeType inSize;
 
-    string input_file;
-    string output_file;
+    std::string input_file;
+    std::string output_file;
     int x1, x2;
 
 

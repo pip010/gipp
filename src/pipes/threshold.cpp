@@ -1,10 +1,11 @@
-#include "crop.h"
+#include "threshold.h"
 
 #include <tclap/CmdLine.h>
 
 #include <generic_pipe.hpp>
 
 #include <iostream>
+#include <vector>
 
 using namespace gipp;
 using namespace itk;
@@ -12,10 +13,10 @@ using namespace std;
 using namespace TCLAP;
 
 template<typename ImageType>
-bool crop_pipe_args<ImageType>::parse(int argc, char** argv)
+bool threshold_pipe_args<ImageType>::parse(int argc, char** argv)
 {
 
-    CmdLine cmd("Crop description...", ' ', "0.1");
+    CmdLine cmd("Threshold description...", ' ', "0.1");
 
     ValueArg<string> input_file_arg("i","input","Input file or cin",true,"ifile","string");
     cmd.add( input_file_arg );
@@ -23,21 +24,42 @@ bool crop_pipe_args<ImageType>::parse(int argc, char** argv)
     ValueArg<string> output_file_arg("o","output","Output file or cout",true,"ofile","string");
     cmd.add( output_file_arg );
 
-    //MultiArg<int> region("r","region","Region of interest ROI to extract",true,"int");
+    SwitchArg mode_below_arg("b","below","Threshold below given value", false);
+    cmd.add( mode_below_arg );
 
-    UnlabeledMultiArg<int> region_arg("region","specify region to include (start size) for each dimension",true,"int");
-    cmd.add( region_arg ); //multi args must be added last
+    SwitchArg mode_above_arg("a","above","Threshold above given value", false);
+    cmd.add( mode_above_arg );
+
+    UnlabeledMultiArg<unsigned int> threshold_arg("threshold","Specify threhold value(s) [lower upper outside]",true,"unsigned int");
+    cmd.add( threshold_arg ); //multi args must be added last
 
     // throws
     cmd.parse( argc, argv );
 
-    if( region_arg.isSet() )
+    if( threshold_arg.isSet() )
     {
         input_file = input_file_arg.getValue();
         output_file = output_file_arg.getValue();
 
-        x1 = region_arg.getValue().at(0);
-        x2 = region_arg.getValue().at(1);
+        if( mode_below_arg.isSet() )
+        {
+            mode = 1;
+        }
+
+        if( mode_above_arg.isSet() )
+        {
+            mode = 2;
+        }
+
+        auto& vec_t_args = threshold_arg.getValue();
+
+        if(vec_t_args.size() > 0)
+        {
+            t1 = vec_t_args.at(0);
+        }
+
+        //x1 = region_arg.getValue().at(0);
+        //x2 = region_arg.getValue().at(1);
 
         return true;
     }
@@ -52,11 +74,11 @@ int main(int argc, char** argv)
 
     gpipe<ImageType,
     ScopedPointer< ImageFileReader<ImageType> >,
-    ScopedPointer< RegionOfInterestImageFilter< ImageType, ImageType > >,
+    ScopedPointer< ThresholdImageFilter< ImageType > >,
     ScopedPointer< ImageFileWriter<ImageType> >
     > pipe;
 
-    crop_pipe_args<ImageType> args;
+    threshold_pipe_args<ImageType> args;
 
     try
     {

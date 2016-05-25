@@ -10,7 +10,16 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/tclap)
 
-add_executable(crop MACOSX_BUNDLE src/pipes/crop.cpp)
-target_link_libraries(crop ${ITK_LIBRARIES})
-set_property(TARGET crop PROPERTY CXX_STANDARD 11)
-set_property(TARGET crop PROPERTY CXX_STANDARD_REQUIRED ON)
+macro(gen_target arg1)
+  add_executable(${arg1} MACOSX_BUNDLE "src/pipes/${arg1}.cpp")
+  target_link_libraries(${arg1} ${ITK_LIBRARIES})
+  set_property(TARGET ${arg1}  PROPERTY CXX_STANDARD 11)
+  set_property(TARGET ${arg1}  PROPERTY CXX_STANDARD_REQUIRED ON)
+endmacro(gen_target)
+
+
+gen_target(crop)
+
+gen_target(threshold)
+
+gen_target(dilate)

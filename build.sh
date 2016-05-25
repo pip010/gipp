@@ -1,11 +1,11 @@
 if [ "$#" -gt 0 ]; then
 
-	if ! [ -d "build" ]; then
+	if ! [ -d "bin" ]; then
 		mkdir bin
 	fi
-	
-	(cd bin; cmake -DITK_DIR="$1" ../ && make )
-	
+
+	(cd bin; cmake -DCMAKE_BUILD_TYPE=Debug -DITK_DIR:PATH="$1" ../ && make )
+
 else
-	echo "Pass a path to thr ITK_DIR as first argument, Please ;)"
+	echo "Pass a path to the ITK_DIR as first argument, Please ;)"
 fi
