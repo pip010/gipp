@@ -16,7 +16,7 @@ struct dilate_pipe_args
     BASE_ARGS(ImageType)
     BASE_IO(ImageType)
 
-    SizeType radius;
+    SizeValueType radius;
 
     typedef itk::BinaryBallStructuringElement<typename ImageType::PixelType,3> StructuringElementType;
 

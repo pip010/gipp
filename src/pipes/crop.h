@@ -16,25 +16,28 @@ struct crop_pipe_args
 
     SizeType inSize;
 
-    int x1, x2;
+    int roi_region_range[6] = {0,0,0,0,0,0};
 
 
     void set (size_t I,
     itk::RegionOfInterestImageFilter< ImageType, ImageType >* arg)
     {
         typename ImageType::IndexType start;
-        start[0] = inSize[0]/x1;
-        start[1] = inSize[1]/x1;
-        start[2] = inSize[2]/x1;
+        start[0] = roi_region_range[0];
+        start[1] = roi_region_range[2];
+        start[2] = roi_region_range[4];
 
         typename ImageType::SizeType size;
-        size[0] = inSize[0]/x2;
-        size[1] = inSize[1]/x2;
-        size[2] = inSize[2]/x2;
+        size[0] = roi_region_range[1] == 0 ? inSize[0] : roi_region_range[1] ;
+        size[1] = roi_region_range[3] == 0 ? inSize[1] : roi_region_range[3] ;
+        size[2] = roi_region_range[5] == 0 ? inSize[2] : roi_region_range[5] ;
 
         typename ImageType::RegionType desiredRegion;
         desiredRegion.SetSize(size);
         desiredRegion.SetIndex(start);
+
+        //DEBUG
+        //std::cout << desiredRegion;
 
         arg->SetRegionOfInterest(desiredRegion);
     }

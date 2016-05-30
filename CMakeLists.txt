@@ -23,3 +23,5 @@ gen_target(crop)
 gen_target(threshold)
 
 gen_target(dilate)
+
+#gen_target(testpipe)

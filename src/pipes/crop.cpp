@@ -31,13 +31,17 @@ bool crop_pipe_args<ImageType>::parse(int argc, char** argv)
     // throws
     cmd.parse( argc, argv );
 
+    auto& roi_args = region_arg.getValue();
+
     if( region_arg.isSet() )
     {
         input_file = input_file_arg.getValue();
         output_file = output_file_arg.getValue();
 
-        x1 = region_arg.getValue().at(0);
-        x2 = region_arg.getValue().at(1);
+        for(size_t i = 0; i < roi_args.size(); ++i)
+        {
+            roi_region_range[i] = roi_args[i];
+        }
 
         return true;
     }
