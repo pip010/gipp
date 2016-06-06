@@ -24,4 +24,6 @@ gen_target(threshold)
 
 gen_target(dilate)
 
+#gen_target(ops)
+
 #gen_target(testpipe)

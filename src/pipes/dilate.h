@@ -17,8 +17,9 @@ struct dilate_pipe_args
     BASE_IO(ImageType)
 
     SizeValueType radius;
+    PixelType dilate;
 
-    typedef itk::BinaryBallStructuringElement<typename ImageType::PixelType,3> StructuringElementType;
+    typedef itk::BinaryBallStructuringElement<PixelType,3> StructuringElementType;
 
     void set (size_t I, itk::BinaryDilateImageFilter< ImageType, ImageType, StructuringElementType>* arg)
     {
@@ -28,6 +29,8 @@ struct dilate_pipe_args
         structuringElement.CreateStructuringElement();
 
         arg->SetKernel(structuringElement);
+
+        arg->SetDilateValue(dilate);
     }
 
     bool parse(int argc, char** argv);

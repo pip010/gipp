@@ -23,18 +23,33 @@ bool dilate_pipe_args<ImageType>::parse(int argc, char** argv)
     ValueArg<string> output_file_arg("o","output","Output file or cout",true,"ofile","string");
     cmd.add( output_file_arg );
 
-    UnlabeledValueArg<unsigned int> radius_arg("radius","The radius range of the dilate filter kernel",true,0,"unsigned char");
-    cmd.add( radius_arg ); //multi args must be added last
+    UnlabeledMultiArg<unsigned char> dilate_radius_arg("dilate-radius","The dilate binary region value.\nThe radius range of the dilate filter kernel",true,"usigned char");
+    cmd.add( dilate_radius_arg ); //multi args must be added last
 
     // throws
     cmd.parse( argc, argv );
 
-    if( radius_arg.isSet() )
+    auto& dilate_radius_args = dilate_radius_arg.getValue();
+
+    if( dilate_radius_arg.isSet() )
     {
         input_file = input_file_arg.getValue();
         output_file = output_file_arg.getValue();
 
-        radius = radius_arg.getValue();
+        if ( dilate_radius_args.size() == 1 )
+        {
+            dilate = dilate_radius_args.at(0);
+            radius = 1u;
+        }
+        else if ( dilate_radius_args.size() == 2 )
+        {
+            dilate = dilate_radius_args.at(0);
+            radius = dilate_radius_args.at(1);
+        }
+        else
+        {
+            return false;
+        }
 
         return true;
     }

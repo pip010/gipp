@@ -6,7 +6,10 @@
 void set (size_t I, itk::ProcessObject*){} \
 void get (size_t I, const itk::ProcessObject*){} \
 typedef typename IT::SizeType SizeType; \
-typedef typename IT::SizeType::SizeValueType SizeValueType;
+typedef typename IT::SizeType::SizeValueType SizeValueType; \
+typedef typename IT::PixelType PixelType; \
+typedef typename IT::RegionType RegionType; \
+typedef typename IT::IndexType IndexType;
 
 #define BASE_ARGS_WITH_LOG \
 void set (size_t I, itk::ProcessObject*){std::cout << "base_args::set_args\n"} \
