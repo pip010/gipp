@@ -7,36 +7,48 @@
 #include <itkThresholdImageFilter.h>
 
 #include <macros.hpp>
+#include <reg_pipe.h>
 
-template<typename ImageType>
-struct threshold_pipe_args
+namespace threshold
 {
-    BASE_ARGS(ImageType)
-    BASE_IO(ImageType)
-
-    unsigned int t1, t2, t3, mode;
-
-    threshold_pipe_args():
-        t1(0),
-        t2(0),
-        t3(0),
-        mode(3)
+    struct pipe : public gipp::i_pipe
     {
-    }
+        int operator()(int argc, char** argv) override;
+    };
 
-    void set (size_t I, itk::ThresholdImageFilter< ImageType >* arg)
+    template<typename ImageType>
+    struct threshold_pipe_args
     {
-        switch (mode)
+        BASE_ARGS(ImageType)
+        BASE_IO(ImageType)
+
+        unsigned int t1, t2, t3, mode;
+
+        threshold_pipe_args():
+            t1(0),
+            t2(0),
+            t3(0),
+            mode(3)
         {
-            case 1: arg->ThresholdBelow(t1); break;
-            case 2: arg->ThresholdAbove(t1); break;
-            case 3: arg->ThresholdOutside(t1,t2); break;
-            default: break;
         }
 
-        arg->SetOutsideValue(t3);
-    }
+        void set (size_t I, itk::ThresholdImageFilter< ImageType >* arg)
+        {
+            switch (mode)
+            {
+                case 1: arg->ThresholdBelow(t1); break;
+                case 2: arg->ThresholdAbove(t1); break;
+                case 3: arg->ThresholdOutside(t1,t2); break;
+                default: break;
+            }
 
-    bool parse(int argc, char** argv);
+            arg->SetOutsideValue(t3);
+        }
 
-};
+        bool parse(int argc, char** argv);
+
+    };
+
+    static gipp::register_pipe<pipe> p("threshold");
+
+}//namespace

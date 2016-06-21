@@ -1,4 +1,4 @@
-#include "crop.h"
+#include "testpipe.h"
 
 #include <tclap/CmdLine.h>
 
@@ -11,14 +11,11 @@ using namespace itk;
 using namespace std;
 using namespace TCLAP;
 
-namespace crop
-{
-
 template<typename ImageType>
-bool crop_pipe_args<ImageType>::parse(int argc, char** argv)
+bool pipe_args<ImageType>::parse(int argc, char** argv)
 {
 
-    CmdLine cmd("Crop description...", ' ', "0.1");
+    CmdLine cmd("Dilate description...", ' ', "0.1");
 
     ValueArg<string> input_file_arg("i","input","Input file or cin",true,"ifile","string");
     cmd.add( input_file_arg );
@@ -26,24 +23,18 @@ bool crop_pipe_args<ImageType>::parse(int argc, char** argv)
     ValueArg<string> output_file_arg("o","output","Output file or cout",true,"ofile","string");
     cmd.add( output_file_arg );
 
-
-    UnlabeledMultiArg<int> region_arg("region","specify region to include (start size) for each dimension",true,"int");
-    cmd.add( region_arg ); //multi args must be added last
+    //UnlabeledValueArg<unsigned int> radius_arg("radius","The radius range of the dilate filter kernel",true,0,"unsigned char");
+    //cmd.add( radius_arg ); //multi args must be added last
 
     // throws
     cmd.parse( argc, argv );
 
-    auto& roi_args = region_arg.getValue();
-
-    if( region_arg.isSet() )
+    if( input_file_arg.isSet() )
     {
         input_file = input_file_arg.getValue();
         output_file = output_file_arg.getValue();
 
-        for(size_t i = 0; i < roi_args.size(); ++i)
-        {
-            roi_region_range[i] = roi_args[i];
-        }
+        //radius = radius_arg.getValue();
 
         return true;
     }
@@ -51,19 +42,18 @@ bool crop_pipe_args<ImageType>::parse(int argc, char** argv)
     return false;
 }
 
-
-int pipe::operator()(int argc, char** argv)
+int main(int argc, char** argv)
 {
 
-    typedef Image<float,3> ImageType;
+    typedef Image<unsigned char,3> ImageType;
 
     gpipe<ImageType,
     ScopedPointer< ImageFileReader<ImageType> >,
-    ScopedPointer< RegionOfInterestImageFilter< ImageType, ImageType > >,
+    ScopedPointer< Euler3DTransform<double> >,
     ScopedPointer< ImageFileWriter<ImageType> >
     > pipe;
 
-    crop_pipe_args<ImageType> args;
+    pipe_args<ImageType> args;
 
     try
     {
@@ -71,9 +61,8 @@ int pipe::operator()(int argc, char** argv)
         {
             pipe.Update(args);
         }
-
     }
-    catch (ArgException& ex)
+    catch ( ArgException& ex )
     {
         cerr << "Parse error : " << ex.error() << " for arg " << ex.argId() << endl;
     }
@@ -85,6 +74,5 @@ int pipe::operator()(int argc, char** argv)
     }
 
     return EXIT_SUCCESS;
-}
 
-}//namespace
+}

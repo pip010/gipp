@@ -10,6 +10,8 @@
 
 #include <macros.hpp>
 
+//https://itk.org/Doxygen/html/classitk_1_1BinaryDilateImageFilter.html
+
 template<typename ImageType>
 struct dilate_pipe_args
 {
