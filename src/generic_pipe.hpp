@@ -110,6 +110,30 @@ namespace gipp
 		{
 			hook<I + 1, Tp...>(t);
 		}
+
+		template<std::size_t I = 0, typename FuncT, typename... Tp>
+		inline typename std::enable_if< !comparator<I, Tp...>::value, void>::type
+			for_each_update2(std::tuple<Tp...>&, FuncT&)
+		{
+		}
+
+		template<std::size_t I = 0, typename FuncT, typename... Tp>
+		inline typename std::enable_if< comparator<I, Tp...>::value, void>::type
+			for_each_update2(std::tuple<Tp...>& t, FuncT& f)
+		{
+			// f.set(I,std::get<I>(t).GetPointer());
+			// std::get<I>(t).GetPointer()->Update();
+			// f.get(I,std::get<I>(t).GetPointer());
+
+			f.set(std::get<I>(t));
+			std::get<I>(t).GetPointer()->Update();
+			f.get(std::get<I>(t));
+
+			for_each_update<I + 1, FuncT, Tp...>(t, f);
+		}
+
+
+
 	}//namespace details
 
 	template<typename Timage, typename... Tfilters>
@@ -152,5 +176,62 @@ namespace gipp
 			return std::get<sizeof...(Tfilters)-1>(pipe).GetPointer();
 		}
 	};
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+
+template<typename Timage, typename... Tfilters>
+struct gpipe2
+{
+	const unsigned int depth = sizeof...(Tfilters);
+
+	typedef std::tuple<Tfilters ...> TupleType;
+	TupleType pipe;
+
+	using ImageType = Timage;
+
+	gpipe2()
+	{
+		details::hook(pipe);
+	}
+
+	template< typename Tfunc>
+	void Update(Tfunc& f)
+	{
+		details::for_each_update2(pipe,f);
+	}
+};
+
+template< typename Tfilter, int I = 0>
+struct node
+{
+	static_assert(std::is_base_of<itk::ProcessObject, Tfilter>::value, "must be inhereting from itk::ProcessObject");
+
+	const int id = I;
+
+	node()
+	{
+		sp = Tfilter::New();
+	}
+
+	void Update()
+	{
+		sp->Update();
+	}
+
+	void PrintSelf()
+	{
+		sp->Print(std::cout,itk::Indent(1));
+	}
+
+	Tfilter* Get() const
+	{
+		return sp.GetPointer();
+	}
+
+private:
+	itk::SmartPointer<Tfilter> sp;
+};
 
 }

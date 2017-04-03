@@ -12,6 +12,44 @@ using namespace std;
 using namespace TCLAP;
 
 template<typename ImageType>
+struct pipe_args2
+{
+    void set (node<ProcessObject>&)
+    {
+        std::cout << "base_args::set_args\n"
+    }
+
+    void get (node<ProcessObject>&)
+    {
+        std::cout << "base_args::get_args\n"
+    }
+
+    std::string input_file;
+    std::string output_file;
+
+    void set (node<ImageFileReader<ImageType>>& arg)
+    {
+        arg->SetFileName(input_file.c_str());
+    }
+
+    void set (node<ImageFileWriter<ImageType>>& arg)
+    {
+        arg->SetFileName(output_file.c_str());
+    }
+
+
+    void set(node<Euler3DTransform<double>>& n)
+    {
+
+    }
+
+    void set(node<Euler3DTransform<double>,1>& n)
+    {
+
+    }
+};
+
+template<typename ImageType>
 bool pipe_args<ImageType>::parse(int argc, char** argv)
 {
 
@@ -53,10 +91,21 @@ int main(int argc, char** argv)
     ScopedPointer< ImageFileWriter<ImageType> >
     > pipe;
 
+    gpipe2<ImageType,
+    node< ImageFileReader<ImageType> >,
+    node< Euler3DTransform<double> >,
+    node< Euler3DTransform<double>, 1>,
+    node< ImageFileWriter<ImageType> >
+    > pipe2;
+
     pipe_args<ImageType> args;
+
+    pipe_args2<ImageType> args2;
 
     try
     {
+        pipe2.Update(args2);
+
         if( args.parse(argc,argv) )
         {
             pipe.Update(args);
