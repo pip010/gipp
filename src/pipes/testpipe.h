@@ -10,7 +10,7 @@
 #include <macros.hpp>
 
 template<typename ImageType>
-struct pipe_args
+struct test_pipe_args
 {
     BASE_ARGS(ImageType)
     BASE_IO(ImageType)

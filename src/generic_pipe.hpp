@@ -126,10 +126,10 @@ namespace gipp
 			// f.get(I,std::get<I>(t).GetPointer());
 
 			f.set(std::get<I>(t));
-			std::get<I>(t).GetPointer()->Update();
+			std::get<I>(t).Update();
 			f.get(std::get<I>(t));
 
-			for_each_update<I + 1, FuncT, Tp...>(t, f);
+			for_each_update2<I + 1, FuncT, Tp...>(t, f);
 		}
 
 
@@ -203,16 +203,22 @@ struct gpipe2
 	}
 };
 
+struct node_base
+{
+
+};
+
 template< typename Tfilter, int I = 0>
-struct node
+struct node : node_base
 {
 	static_assert(std::is_base_of<itk::ProcessObject, Tfilter>::value, "must be inhereting from itk::ProcessObject");
 
 	const int id = I;
 
 	node()
+	:
+		sp(Tfilter::New())
 	{
-		sp = Tfilter::New();
 	}
 
 	void Update()
@@ -225,7 +231,7 @@ struct node
 		sp->Print(std::cout,itk::Indent(1));
 	}
 
-	Tfilter* Get() const
+	Tfilter* GetPointer()
 	{
 		return sp.GetPointer();
 	}

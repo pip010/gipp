@@ -21,4 +21,11 @@ add_executable(gtools MACOSX_BUNDLE "main.cpp" "src/reg_pipe.cpp" ${SRCS_LIST})
 target_link_libraries(gtools ${ITK_LIBRARIES})
 set_property(TARGET gtools  PROPERTY CXX_STANDARD 11)
 set_property(TARGET gtools  PROPERTY CXX_STANDARD_REQUIRED ON)
+
+
+add_executable(xpipe MACOSX_BUNDLE "x_main.cpp")
+target_link_libraries(xpipe ${ITK_LIBRARIES})
+set_property(TARGET xpipe  PROPERTY CXX_STANDARD 11)
+set_property(TARGET xpipe  PROPERTY CXX_STANDARD_REQUIRED ON)
+
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++")

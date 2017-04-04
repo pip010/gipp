@@ -4,4 +4,5 @@
 #include <crop.h>
 #include <dilate.h>
 
-#include<testpipe.h>
+//separete exe target
+//#include<testpipe.h>
